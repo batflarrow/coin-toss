@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "five-pounds-tails.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
