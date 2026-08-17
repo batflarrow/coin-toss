@@ -88,8 +88,9 @@ final class CoinTossUITests: XCTestCase {
         coin.tap()
         XCTAssertTrue(waitForLabel(app, containing: "out of 1 flips"))
 
-        // The coin is disabled mid-flight, so wait for it to accept taps again.
-        XCTAssertTrue(coin.isEnabled, "Coin stayed disabled after it settled")
+        // The tally is published a moment before the coin is re-enabled, so
+        // poll rather than checking the instant the tally shows up.
+        XCTAssertTrue(waitUntilEnabled(coin), "Coin stayed disabled after it settled")
         coin.tap()
 
         XCTAssertTrue(
@@ -163,6 +164,16 @@ final class CoinTossUITests: XCTestCase {
         let settings = app.buttons["Settings"].firstMatch
         XCTAssertTrue(settings.waitForExistence(timeout: 20), "Settings button never appeared")
         settings.tap()
+    }
+
+    /// Waits for a control to become tappable again after an animation.
+    private func waitUntilEnabled(_ element: XCUIElement, timeout: TimeInterval = 15) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if element.isEnabled { return true }
+            _ = XCTWaiter.wait(for: [expectation(description: "poll")], timeout: 0.2)
+        }
+        return false
     }
 
     /// The coin list is taller than the watch screen, so scroll while looking.
