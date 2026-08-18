@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support — Coin Toss</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f6f7f9;
+    --text: #1a1c1f;
+    --muted: #5b6169;
+    --rule: #e3e6ea;
+    --accent: #b8860b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101114;
+      --surface: #191b1f;
+      --text: #e9eaec;
+      --muted: #9aa1aa;
+      --rule: #2a2d33;
+      --accent: #f2cd52;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 3rem 1.25rem 5rem;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  main { max-width: 44rem; margin: 0 auto; }
+  h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .35rem; letter-spacing: -.02em; }
+  h2 {
+    font-size: 1.1rem; margin: 2.5rem 0 .6rem;
+    padding-top: 1.5rem; border-top: 1px solid var(--rule);
+    letter-spacing: -.01em;
+  }
+  h3 { font-size: .98rem; margin: 1.5rem 0 .3rem; }
+  .sub { color: var(--muted); font-size: .95rem; margin: 0 0 2rem; }
+  .lede {
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.15rem;
+    border-radius: 0 8px 8px 0;
+    margin: 0 0 1rem;
+  }
+  ul { padding-left: 1.2rem; }
+  li { margin: .35rem 0; }
+  a { color: var(--accent); }
+  code {
+    background: var(--surface);
+    padding: .12em .4em;
+    border-radius: 4px;
+    font-size: .9em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  footer {
+    margin-top: 3rem; padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    color: var(--muted); font-size: .9rem;
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Coin Toss Support</h1>
+  <p class="sub">Coin Toss for Apple Watch</p>
+
+  <p class="lede">Coin Toss is a coin you keep on your wrist. Tap anywhere on the
+  screen and it throws, tumbles, lands and shows you heads or tails.</p>
+
+  <h2>Using the app</h2>
+
+  <h3>Tossing the coin</h3>
+  <p>Tap anywhere on the screen — you don't need to hit the coin itself. The coin
+  is thrown, spins through the air, lands and settles. The result appears the
+  moment it touches down.</p>
+
+  <h3>Changing the coin</h3>
+  <p>Tap the gear in the top-right corner. There are eight coins: US Cent, Rupee
+  and Five Pounds are photographs of real currency, and Classic, Quarter,
+  Doubloon, Bitcoin and Jade are drawn. Your choice is remembered.</p>
+
+  <h3>Why did it pick this coin to start with?</h3>
+  <p>Coin Toss opens on the coin that matches your region — the US Cent in the
+  United States, the Rupee in India, Five Pounds in the United Kingdom. Anywhere
+  else starts on the plain heads-and-tails coin. You can change it at any time.</p>
+
+  <h3>Turning the sound off</h3>
+  <p>Gear icon → <strong>Sound</strong>. Haptic feedback stays on either way. The
+  app uses the ambient audio category, so a toss will never interrupt music or a
+  podcast, and stays quiet when your watch is muted.</p>
+
+  <h3>Resetting the tally</h3>
+  <p>Tap the circular arrow next to the heads and tails counts. The tally is not
+  saved between launches — closing the app clears it.</p>
+
+  <h2>Common questions</h2>
+
+  <h3>Is the coin actually fair?</h3>
+  <p>Yes. Each toss is an independent 50/50 draw from the system random number
+  generator. Nothing about your streak, the coin you picked, or your past results
+  changes the odds. The source is public if you'd like to check:
+  <a href="https://github.com/batflarrow/coin-toss/blob/main/CoinToss%20Watch%20App/CoinFlipper.swift">CoinFlipper.swift</a>.</p>
+
+  <h3>Does it need my iPhone?</h3>
+  <p>No. Coin Toss runs entirely on the watch and works with no phone nearby and
+  no internet connection.</p>
+
+  <h3>Does it collect any data?</h3>
+  <p>No. No accounts, no analytics, no tracking, and no network requests at all.
+  See the <a href="privacy.html">privacy policy</a>.</p>
+
+  <h3>Does it work with VoiceOver?</h3>
+  <p>Yes. The coin, the result, the tally and every control are labelled. The
+  tally is spoken as a single summary that includes your current streak.</p>
+
+  <h2>Report a problem or ask for something</h2>
+  <p>Open an issue at
+  <a href="https://github.com/batflarrow/coin-toss/issues">github.com/batflarrow/coin-toss/issues</a>.
+  It helps to include your watch model and watchOS version — you'll find these in
+  the Watch app on your iPhone under <strong>General → About</strong>.</p>
+
+  <footer>
+    Coin Toss is open source:
+    <a href="https://github.com/batflarrow/coin-toss">github.com/batflarrow/coin-toss</a>
+    · <a href="privacy.html">Privacy policy</a>
+  </footer>
+</main>
+</body>
+</html>
