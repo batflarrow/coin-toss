@@ -13,14 +13,18 @@
 	<string>manual</string>
 	<key>signingCertificate</key>
 	<string>Apple Distribution</string>
+	<!-- The watch-only container and the watch app it carries are signed as a
+	     pair, so both bundle IDs need a profile here. -->
 	<key>provisioningProfiles</key>
 	<dict>
 		<key>com.batflarrow.CoinToss</key>
 		<string>Coin Toss App Store</string>
+		<key>com.batflarrow.CoinToss.watchkitapp</key>
+		<string>Coin Toss Watch App Store</string>
 	</dict>
 	<key>uploadSymbols</key>
 	<true/>
 	<key>destination</key>
-	<string>export</string>
+	<string>upload</string>
 </dict>
 </plist>
