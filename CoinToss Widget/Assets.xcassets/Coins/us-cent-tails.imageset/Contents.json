@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "us-cent-tails.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

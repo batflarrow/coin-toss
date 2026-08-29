@@ -3,7 +3,11 @@ import WatchKit
 import WidgetKit
 
 struct ContentView: View {
-    @AppStorage("selectedCoinStyle") private var selectedStyleID = CoinStyle.regionalDefault.id
+    // Stored in the shared App Group suite rather than the default domain
+    // — the widget reads this key too, so it can show the coin actually in
+    // play instead of a hardcoded one.
+    @AppStorage("selectedCoinStyle", store: UserDefaults(suiteName: SharedCoinStore.suiteName))
+    private var selectedStyleID = CoinStyle.regionalDefault.id
     @AppStorage("soundEnabled") private var soundEnabled = true
     @AppStorage("tallyVisible") private var tallyVisible = true
 
