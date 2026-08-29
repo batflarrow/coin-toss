@@ -54,27 +54,57 @@ struct CoinTossWidgetProvider: TimelineProvider {
 /// Just the glyph or photo for a coin's current art — no background, no
 /// tap handling, so it can be reused at whatever size each widget family
 /// needs.
+///
+/// `AnyView` here is just the usual way to return heterogeneous branch
+/// types from one `View` — it is *not* what makes the photo case work.
+/// The real fix, found by bisection, is the asset size: a coin photo
+/// straight out of the app's own asset catalog (256×256, 60–140KB) makes
+/// every reload fail with `WidgetKit.WidgetArchiver.ArchivingError Code=2
+/// "(null)"`, for every widget family, even though the exact same view
+/// tree renders fine with `Image(systemName:)` or with a small raster
+/// image. Confirmed by shrinking just one coin's heads image to 64×64
+/// (~9KB) while leaving everything else untouched: that one face started
+/// reloading successfully while the still-oversized tails face kept
+/// failing. There's a payload-size ceiling somewhere between chronod and
+/// the widget-renderer XPC transport that the SDK doesn't document or
+/// surface a useful error for — it just reports `Code=2 "(null)"`
+/// regardless of cause. The widget's own copies of the coin photos
+/// (`CoinToss Widget/Assets.xcassets/Coins`) are downsized to 88×88
+/// (~15-19KB) accordingly; the app's full-size originals are untouched.
 private struct CoinArtView: View {
     let art: WidgetCoinArt?
     var symbolPointSize: CGFloat = 16
 
     var body: some View {
+        content
+    }
+
+    private var content: AnyView {
         switch art {
-        case .letter(let text):
-            Text(text)
-                .font(.system(size: symbolPointSize * 1.1, weight: .heavy, design: .serif))
+        case .letter(let letter):
+            return AnyView(
+                Text(letter)
+                    .font(.system(size: symbolPointSize, weight: .semibold, design: .rounded))
+            )
         case .symbol(let name):
-            Image(systemName: name)
-                .font(.system(size: symbolPointSize, weight: .semibold))
+            return AnyView(
+                Image(systemName: name)
+                    .font(.system(size: symbolPointSize))
+            )
         case .photo(let name):
-            Image(name)
-                .resizable()
-                .scaledToFill()
-                .clipShape(Circle())
+            return AnyView(
+                Image(name)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 46, height: 46)
+                    .clipShape(Circle())
+            )
         case nil:
-            // Never flipped from anywhere yet.
-            Image(systemName: "circle.fill")
-                .font(.system(size: symbolPointSize))
+            // Pre-flip: an empty circle rather than any specific coin face.
+            return AnyView(
+                Image(systemName: "circle")
+                    .font(.system(size: symbolPointSize))
+            )
         }
     }
 }
@@ -86,16 +116,18 @@ struct CoinTossCircularView: View {
 
     var body: some View {
         Button(intent: FlipCoinIntent()) {
-            if case .photo = entry.art {
-                // A photo fills the whole circle itself — layering it over
-                // AccessoryWidgetBackground would just hide the background
-                // entirely, so skip it for this case only.
+            // Always the same view shape (ZStack of background + art) rather
+            // than branching on `entry.art` to skip the background for
+            // photos — WidgetKit's archiver on this OS/Xcode combination
+            // fails to serialize a Button label whose content is an
+            // `if/else` over two different view types (a bare `CoinArtView`
+            // vs. a `ZStack<...>`), even though each branch archives fine on
+            // its own. A photo fills the circle anyway, so the background
+            // just sits fully hidden underneath it — same result, one
+            // uniform type.
+            ZStack {
+                AccessoryWidgetBackground()
                 CoinArtView(art: entry.art)
-            } else {
-                ZStack {
-                    AccessoryWidgetBackground()
-                    CoinArtView(art: entry.art)
-                }
             }
         }
         .buttonStyle(.plain)
@@ -112,13 +144,11 @@ struct CoinTossRectangularView: View {
     var body: some View {
         Button(intent: FlipCoinIntent()) {
             HStack(spacing: 8) {
+                // Same uniform-shape reasoning as CoinTossCircularView: no
+                // if/else here, always background + art.
                 ZStack {
-                    if case .photo = entry.art {
-                        CoinArtView(art: entry.art)
-                    } else {
-                        AccessoryWidgetBackground()
-                        CoinArtView(art: entry.art, symbolPointSize: 14)
-                    }
+                    AccessoryWidgetBackground()
+                    CoinArtView(art: entry.art, symbolPointSize: 14)
                 }
                 .frame(width: 28, height: 28)
                 .clipShape(Circle())
