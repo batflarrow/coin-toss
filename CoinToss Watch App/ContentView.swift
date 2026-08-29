@@ -58,6 +58,13 @@ struct ContentView: View {
         }
         .onAppear { SoundPlayer.shared.prepare() }
         .onDisappear { flipTask?.cancel() }
+        // Changing the coin in Settings doesn't flip it, but the widget's
+        // last-drawn timeline is now showing the wrong coin's art until
+        // something tells it to redraw — a flip already does; picking a
+        // different coin needs to trigger the same reload.
+        .onChange(of: selectedStyleID) {
+            WidgetCenter.shared.reloadTimelines(ofKind: CoinTossWidgetKind.name)
+        }
     }
 
     /// The coin is the primary control, and the star of the screen.

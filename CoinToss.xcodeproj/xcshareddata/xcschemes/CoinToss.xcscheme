@@ -48,6 +48,16 @@
                ReferencedContainer = "container:CoinToss.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "1A0000000000000000000099"
+               BuildableName = "CoinToss WidgetKitTests.xctest"
+               BlueprintName = "CoinToss WidgetKitTests"
+               ReferencedContainer = "container:CoinToss.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

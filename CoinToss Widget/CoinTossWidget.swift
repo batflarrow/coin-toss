@@ -1,3 +1,4 @@
+import CoinTossWidgetKit
 import SwiftUI
 import WidgetKit
 
