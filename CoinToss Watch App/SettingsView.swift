@@ -1,9 +1,11 @@
 import SwiftUI
 
-/// Secondary screen: which coin is in play, and whether tosses make a sound.
+/// Secondary screen: which coin is in play, whether tosses make a sound, and
+/// whether the running tally shows under the coin.
 struct SettingsView: View {
     @Binding var selectedStyleID: String
     @Binding var soundEnabled: Bool
+    @Binding var tallyVisible: Bool
 
     var body: some View {
         List {
@@ -19,6 +21,7 @@ struct SettingsView: View {
 
             Section {
                 Toggle("Sound", isOn: $soundEnabled)
+                Toggle("Tally", isOn: $tallyVisible)
             }
         }
         .navigationTitle("Settings")
@@ -52,7 +55,8 @@ private struct CoinRow: View {
     NavigationStack {
         SettingsView(
             selectedStyleID: .constant(CoinStyle.quarter.id),
-            soundEnabled: .constant(true)
+            soundEnabled: .constant(true),
+            tallyVisible: .constant(true)
         )
     }
 }

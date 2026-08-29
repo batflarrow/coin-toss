@@ -4,6 +4,7 @@ import WatchKit
 struct ContentView: View {
     @AppStorage("selectedCoinStyle") private var selectedStyleID = CoinStyle.regionalDefault.id
     @AppStorage("soundEnabled") private var soundEnabled = true
+    @AppStorage("tallyVisible") private var tallyVisible = true
 
     @State private var flipper = CoinFlipper()
     @State private var isFlipping = false
@@ -30,7 +31,7 @@ struct ContentView: View {
                     .contentTransition(.opacity)
                     .animation(.easeInOut(duration: 0.2), value: headline)
 
-                if flipper.totalFlips > 0 {
+                if tallyVisible && flipper.totalFlips > 0 {
                     tally
                 }
             }
@@ -39,7 +40,11 @@ struct ContentView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink {
-                    SettingsView(selectedStyleID: $selectedStyleID, soundEnabled: $soundEnabled)
+                    SettingsView(
+                        selectedStyleID: $selectedStyleID,
+                        soundEnabled: $soundEnabled,
+                        tallyVisible: $tallyVisible
+                    )
                 } label: {
                     Image(systemName: "gearshape.fill")
                 }
@@ -65,6 +70,9 @@ struct ContentView: View {
         }
         .buttonStyle(.plain)
         .disabled(isFlipping)
+        // The coin is the screen's one action, so it's what Double Tap
+        // (Series 9/Ultra 2+) triggers — no separate gesture code needed.
+        .handGestureShortcut(.primaryAction)
         .accessibilityIdentifier("coin")
         .accessibilityHint("Flips the coin")
     }

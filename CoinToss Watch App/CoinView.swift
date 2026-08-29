@@ -13,9 +13,14 @@ struct CoinView: View {
     var isFlipping: Bool = false
     var diameter: CGFloat = 88
 
-    /// Before the first flip there is no face to show, so the coin is blank.
-    private var currentArt: CoinArt? {
-        face.map(style.art(for:))
+    /// Before the first flip there's no result yet, so the coin previews its
+    /// heads face rather than sitting there unengraved — a real face reads as
+    /// "ready to toss", where a blank disc reads as broken.
+    ///
+    /// Internal rather than private so `CoinViewTests` can assert this
+    /// without a rendering environment.
+    var currentArt: CoinArt {
+        style.art(for: face ?? .heads)
     }
 
     var body: some View {
@@ -89,7 +94,7 @@ struct CoinView: View {
         case .symbol(let name):
             Image(systemName: name)
                 .font(.system(size: diameter * 0.38, weight: .semibold))
-        case .photo, .none:
+        case .photo:
             EmptyView()
         }
     }

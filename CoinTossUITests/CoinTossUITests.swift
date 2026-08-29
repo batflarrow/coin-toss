@@ -160,6 +160,43 @@ final class CoinTossUITests: XCTestCase {
         )
     }
 
+    @MainActor
+    func testTallyToggleControlsVisibilityWithoutLosingCount() {
+        let app = launchApp()
+        openSettings(in: app)
+
+        // The Sound/Tally section sits below the eight-coin list, off-screen
+        // until scrolled — same as the coin rows in the tests above.
+        XCTAssertTrue(scrollToLabel(app, containing: "Tally"), "Tally toggle never appeared")
+        let tallyToggle = app.switches.matching(NSPredicate(format: "label CONTAINS %@", "Tally")).firstMatch
+
+        // Off: a flip still happens, but the tally stays out of sight.
+        tallyToggle.tap()
+        app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Back")).firstMatch.tap()
+        coin(in: app).tap()
+
+        XCTAssertTrue(
+            app.staticTexts.matching(Self.resultPredicate).firstMatch.waitForExistence(timeout: 10),
+            "The flip should still happen even with the tally hidden"
+        )
+        XCTAssertFalse(
+            waitForLabel(app, containing: "out of 1 flips", timeout: 3),
+            "Tally should stay hidden after a flip once the toggle is off"
+        )
+
+        // Back on: the same tally the hidden flip already built reappears —
+        // hiding it is presentation-only, not a reset.
+        openSettings(in: app)
+        XCTAssertTrue(scrollToLabel(app, containing: "Tally"), "Tally toggle never reappeared")
+        app.switches.matching(NSPredicate(format: "label CONTAINS %@", "Tally")).firstMatch.tap()
+        app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Back")).firstMatch.tap()
+
+        XCTAssertTrue(
+            waitForLabel(app, containing: "out of 1 flips"),
+            "Tally should reappear, still showing the flip made while it was hidden"
+        )
+    }
+
     private func openSettings(in app: XCUIApplication) {
         let settings = app.buttons["Settings"].firstMatch
         XCTAssertTrue(settings.waitForExistence(timeout: 20), "Settings button never appeared")
