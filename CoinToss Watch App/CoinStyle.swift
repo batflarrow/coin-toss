@@ -151,7 +151,7 @@ extension CoinStyle {
 
     /// Every coin on offer — real currency first, then the drawn ones.
     static let all: [CoinStyle] = [
-        usCent, rupee, fivePounds,
+        rupee, usCent, fivePounds,
         classic, quarter, doubloon, bitcoin, jade,
     ]
 
