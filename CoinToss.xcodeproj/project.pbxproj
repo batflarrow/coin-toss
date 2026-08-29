@@ -429,6 +429,11 @@
 				TargetAttributes = {
 					1A0000000000000000000010 = {
 						CreatedOnToolsVersion = 26.6;
+						SystemCapabilities = {
+							"com.apple.ApplicationGroups.iOS" = {
+								enabled = 1;
+							};
+						};
 					};
 					1A0000000000000000000020 = {
 						CreatedOnToolsVersion = 26.6;
@@ -443,6 +448,11 @@
 					};
 					1A0000000000000000000074 = {
 						CreatedOnToolsVersion = 26.6;
+						SystemCapabilities = {
+							"com.apple.ApplicationGroups.iOS" = {
+								enabled = 1;
+							};
+						};
 					};
 					1A0000000000000000000086 = {
 						CreatedOnToolsVersion = 26.6;
