@@ -441,7 +441,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "CoinToss Watch App/CoinToss Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"CoinToss Watch App/Preview Content\"";
 				DEVELOPMENT_TEAM = 56KRZRUNG9;
 				ENABLE_PREVIEWS = YES;
@@ -474,7 +474,7 @@
 				CODE_SIGN_ENTITLEMENTS = "CoinToss Watch App/CoinToss Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"CoinToss Watch App/Preview Content\"";
 				DEVELOPMENT_TEAM = 56KRZRUNG9;
 				ENABLE_PREVIEWS = YES;
@@ -688,7 +688,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 56KRZRUNG9;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Coin Toss";
@@ -710,7 +710,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 56KRZRUNG9;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Coin Toss";
@@ -731,7 +731,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "CoinToss Widget/CoinTossWidget.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 56KRZRUNG9;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "CoinToss Widget/Info.plist";
@@ -756,7 +756,7 @@
 				CODE_SIGN_ENTITLEMENTS = "CoinToss Widget/CoinTossWidget.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 56KRZRUNG9;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "CoinToss Widget/Info.plist";
