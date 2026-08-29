@@ -36,3 +36,7 @@ Carthage/Build/
 
 # macOS
 .DS_Store
+
+# Internal runbook — names account-specific identifiers, doesn't belong in a
+# public history
+Docs/PLAYBOOK.md
