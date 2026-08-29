@@ -76,6 +76,18 @@ final class CoinFlipper {
         return face
     }
 
+    /// Replaces the whole tally with a previously persisted one — used to
+    /// seed the flipper from the shared App Group store on launch and on
+    /// every foreground, so a toss made from the widget is reflected here.
+    /// `history` is trimmed to ``historyLimit`` defensively; `result` is
+    /// taken to be the newest face in that history.
+    func restore(headsCount: Int, tailsCount: Int, history: [CoinFace]) {
+        self.headsCount = max(0, headsCount)
+        self.tailsCount = max(0, tailsCount)
+        self.history = Array(history.prefix(Self.historyLimit))
+        self.result = self.history.first
+    }
+
     /// Clears the tallies and history, returning the coin to its pre-flip state.
     func reset() {
         result = nil

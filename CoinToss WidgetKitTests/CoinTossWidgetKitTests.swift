@@ -5,7 +5,11 @@ import Testing
 /// The widget's own logic, tested in isolation from both the app and the
 /// extension's SwiftUI views — none of this needs a rendering environment
 /// or a live widget host, just the shared store and the App Intent.
-@Suite("CoinTossWidgetKit")
+///
+/// `.serialized` because every case here reads and writes the one real
+/// App Group `UserDefaults` suite; run in parallel (swift-testing's
+/// default) they stomp each other's state.
+@Suite("CoinTossWidgetKit", .serialized)
 struct CoinTossWidgetKitTests {
 
     @Test("The shared store round-trips a flip result")
@@ -51,6 +55,43 @@ struct CoinTossWidgetKitTests {
             let tails = WidgetCoinCatalog.art(for: styleID, face: "tails")
             #expect(heads != tails, "\(styleID) shows the same art on both faces")
         }
+    }
+
+    @Test("recordFlip accumulates counts, history and last result")
+    func recordFlipAccumulates() {
+        SharedCoinStore.resetTally()
+
+        SharedCoinStore.recordFlip("heads")
+        SharedCoinStore.recordFlip("tails")
+        SharedCoinStore.recordFlip("heads")
+
+        #expect(SharedCoinStore.headsCount == 2)
+        #expect(SharedCoinStore.tailsCount == 1)
+        #expect(SharedCoinStore.lastResult == "heads")
+        #expect(Array(SharedCoinStore.history.prefix(3)) == ["heads", "tails", "heads"])
+    }
+
+    @Test("recordFlip caps history at the shared limit")
+    func recordFlipCapsHistory() {
+        SharedCoinStore.resetTally()
+
+        for _ in 0..<(SharedCoinStore.historyLimit + 6) {
+            SharedCoinStore.recordFlip("heads")
+        }
+
+        #expect(SharedCoinStore.history.count == SharedCoinStore.historyLimit)
+    }
+
+    @Test("resetTally clears counts, history and last result")
+    func resetTallyClears() {
+        SharedCoinStore.recordFlip("tails")
+
+        SharedCoinStore.resetTally()
+
+        #expect(SharedCoinStore.headsCount == 0)
+        #expect(SharedCoinStore.tailsCount == 0)
+        #expect(SharedCoinStore.history.isEmpty)
+        #expect(SharedCoinStore.lastResult == nil)
     }
 
     @Test("The shared store round-trips the selected coin style")

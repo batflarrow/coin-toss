@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  Only the keys GENERATE_INFOPLIST_FILE can't express live here; the
+	  INFOPLIST_KEY_* build settings (WKApplication, CFBundleDisplayName,
+	  versions, …) are still merged on top of this file at build time.
+
+	  The URL scheme is how the circular complication opens the app: its
+	  widgetURL is `cointoss://flip`, delivered to `ContentView.onOpenURL`.
+	-->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.batflarrow.CoinToss.flip</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>cointoss</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

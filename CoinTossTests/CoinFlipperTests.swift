@@ -143,6 +143,42 @@ struct CoinFlipperTests {
         #expect(coin.headsShare == 0)
     }
 
+    @Test("Restore replaces the tally and takes result from the newest face")
+    func restoreSeedsState() {
+        let coin = flipper(scripted: [.heads])
+
+        coin.restore(headsCount: 3, tailsCount: 2, history: [.tails, .heads, .tails])
+
+        #expect(coin.headsCount == 3)
+        #expect(coin.tailsCount == 2)
+        #expect(coin.totalFlips == 5)
+        #expect(coin.result == .tails)
+        #expect(coin.history == [.tails, .heads, .tails])
+        #expect(coin.currentStreak == 1)
+    }
+
+    @Test("Restore trims history to the limit and clamps negative counts")
+    func restoreIsDefensive() {
+        let coin = flipper(scripted: [.heads])
+        let longHistory = Array(repeating: CoinFace.heads, count: CoinFlipper.historyLimit + 8)
+
+        coin.restore(headsCount: -4, tailsCount: 1, history: longHistory)
+
+        #expect(coin.headsCount == 0)
+        #expect(coin.history.count == CoinFlipper.historyLimit)
+    }
+
+    @Test("Restore with empty history leaves no result")
+    func restoreEmptyHistory() {
+        let coin = flipper(scripted: [.heads])
+
+        coin.flip()
+        coin.restore(headsCount: 0, tailsCount: 0, history: [])
+
+        #expect(coin.result == nil)
+        #expect(coin.totalFlips == 0)
+    }
+
     @Test("Flipping works again after a reset")
     func flipAfterReset() {
         let coin = flipper(scripted: [.heads])

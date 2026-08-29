@@ -109,30 +109,25 @@ private struct CoinArtView: View {
     }
 }
 
-/// The watch-face complication: one button standing in for the coin.
-/// Tapping it flips right there, no app launch required.
+/// The watch-face complication: the coin standing on its own.
+///
+/// This one doesn't toss on the face — a `widgetURL` opens the app on
+/// `cointoss://flip`, and the app runs the toss with its full flight
+/// animation on arrival. An in-widget `Button(intent:)` here only ever
+/// launched the app without running the toss on this OS/Xcode combination,
+/// and flipping silently in place gave no feedback anything had happened;
+/// a launched, animated toss reads far better for "settle it right now".
 struct CoinTossCircularView: View {
     let entry: CoinEntry
 
     var body: some View {
-        Button(intent: FlipCoinIntent()) {
-            // Always the same view shape (ZStack of background + art) rather
-            // than branching on `entry.art` to skip the background for
-            // photos — WidgetKit's archiver on this OS/Xcode combination
-            // fails to serialize a Button label whose content is an
-            // `if/else` over two different view types (a bare `CoinArtView`
-            // vs. a `ZStack<...>`), even though each branch archives fine on
-            // its own. A photo fills the circle anyway, so the background
-            // just sits fully hidden underneath it — same result, one
-            // uniform type.
-            ZStack {
-                AccessoryWidgetBackground()
-                CoinArtView(art: entry.art)
-            }
+        ZStack {
+            AccessoryWidgetBackground()
+            CoinArtView(art: entry.art)
         }
-        .buttonStyle(.plain)
+        .widgetURL(URL(string: "cointoss://flip"))
         .accessibilityLabel(entry.accessibilityLabel)
-        .accessibilityHint("Flips the coin")
+        .accessibilityHint("Opens Coin Toss and flips")
     }
 }
 
@@ -152,6 +147,11 @@ struct CoinTossRectangularView: View {
                 }
                 .frame(width: 28, height: 28)
                 .clipShape(Circle())
+                // While the tapped intent is tossing and the timeline
+                // hasn't reloaded yet, WidgetKit redacts anything marked
+                // invalidatable with a shimmer — that shimmer *is* the
+                // "flipping…" cue for the in-place toss.
+                .invalidatableContent()
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Coin Toss")
@@ -159,6 +159,8 @@ struct CoinTossRectangularView: View {
                     Text(subtitle)
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .contentTransition(.opacity)
+                        .invalidatableContent()
                 }
 
                 Spacer(minLength: 0)

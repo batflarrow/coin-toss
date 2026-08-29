@@ -11,6 +11,8 @@ struct ContentView: View {
     @AppStorage("soundEnabled") private var soundEnabled = true
     @AppStorage("tallyVisible") private var tallyVisible = true
 
+    @Environment(\.scenePhase) private var scenePhase
+
     @State private var flipper = CoinFlipper()
     @State private var isFlipping = false
     /// Bumped on each toss to retrigger the flight animation.
@@ -18,6 +20,10 @@ struct ContentView: View {
     /// Whole turns for the current toss, so the coin always lands face-on.
     @State private var turns = 4.0
     @State private var flipTask: Task<Void, Never>?
+    /// Set when the circular complication opens the app on `cointoss://flip`;
+    /// consumed by the next `syncFromStore()` so the toss runs only after the
+    /// tally has been seeded (avoids a launch-order race that would drop it).
+    @State private var flipOnSync = false
 
     private var style: CoinStyle { CoinStyle.named(selectedStyleID) }
 
@@ -56,14 +62,62 @@ struct ContentView: View {
                 .accessibilityLabel("Settings")
             }
         }
-        .onAppear { SoundPlayer.shared.prepare() }
+        .onAppear {
+            SoundPlayer.shared.prepare()
+            syncFromStore()
+        }
         .onDisappear { flipTask?.cancel() }
+        // Coming back to the foreground: a toss may have happened on the
+        // widget while we were away, so re-seed the tally from the store —
+        // and honour a flip the circular complication asked for.
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { syncFromStore() }
+        }
+        // The circular complication opens the app on this URL rather than
+        // tossing on the face. Note it and let `syncFromStore()` do the
+        // toss, so it runs after the tally has been restored.
+        .onOpenURL { url in
+            guard url.scheme == "cointoss", url.host == "flip" else { return }
+            flipOnSync = true
+            syncFromStore()
+        }
         // Changing the coin in Settings doesn't flip it, but the widget's
         // last-drawn timeline is now showing the wrong coin's art until
         // something tells it to redraw — a flip already does; picking a
         // different coin needs to trigger the same reload.
         .onChange(of: selectedStyleID) {
+            SharedCoinStore.selectedCoinStyleID = selectedStyleID
             WidgetCenter.shared.reloadTimelines(ofKind: CoinTossWidgetKind.name)
+        }
+    }
+
+    /// Seeds the flipper from the shared store (picking up any widget-side
+    /// tosses) and makes sure the store knows which coin is in play, so the
+    /// widget can draw the right art rather than the plain letter fallback.
+    ///
+    /// If the circular complication asked for a flip on its way in (it opens
+    /// the app rather than tossing on the face), consume that request here —
+    /// after the tally is restored — and run a real toss, animation and all.
+    private func syncFromStore() {
+        guard !isFlipping else { return }
+        flipper.restore(
+            headsCount: SharedCoinStore.headsCount,
+            tailsCount: SharedCoinStore.tailsCount,
+            history: SharedCoinStore.history.compactMap(CoinFace.init(rawValue:))
+        )
+        SharedCoinStore.selectedCoinStyleID = selectedStyleID
+        WidgetCenter.shared.reloadTimelines(ofKind: CoinTossWidgetKind.name)
+
+        if flipOnSync {
+            flipOnSync = false
+            // A beat so the toss screen is actually on-screen before the
+            // coin launches — on a cold start `.onAppear`/`.onOpenURL` fire
+            // while the launch image is still up, and the flight would
+            // otherwise be half over by the time the UI appears.
+            Task {
+                try? await Task.sleep(for: .seconds(0.35))
+                flip()
+            }
         }
     }
 
@@ -151,10 +205,15 @@ struct ContentView: View {
             if soundEnabled { SoundPlayer.shared.play(.land) }
             isFlipping = false
 
-            // The widget/complication reads this through the App Group, so a
-            // flip made in the app shows up there too without waiting for
-            // its own timeline to refresh on its own schedule.
-            SharedCoinStore.lastResult = face.rawValue
+            // The widget/complication reads the tally through the App Group,
+            // so a flip made in the app shows up there too — and stays the
+            // source of truth the app re-reads on its next foreground.
+            SharedCoinStore.store(
+                headsCount: flipper.headsCount,
+                tailsCount: flipper.tailsCount,
+                history: flipper.history.map(\.rawValue),
+                lastResult: face.rawValue
+            )
             WidgetCenter.shared.reloadTimelines(ofKind: CoinTossWidgetKind.name)
         }
     }
@@ -167,7 +226,7 @@ struct ContentView: View {
         withAnimation(.easeInOut(duration: 0.25)) {
             flipper.reset()
         }
-        SharedCoinStore.lastResult = nil
+        SharedCoinStore.store(headsCount: 0, tailsCount: 0, history: [], lastResult: nil)
         WidgetCenter.shared.reloadTimelines(ofKind: CoinTossWidgetKind.name)
     }
 }

@@ -25,7 +25,17 @@ struct FlipCoinIntent: AppIntent {
 
     func perform() async throws -> some IntentResult {
         let face: CoinFace = Bool.random() ? .heads : .tails
-        SharedCoinStore.lastResult = face.rawValue
+
+        // A short beat before the result lands. While `perform()` is still
+        // running the widget shows its `.invalidatableContent()` redacted —
+        // that shimmer is the "tossing…" cue, and without a pause here it
+        // flicks past too fast to register.
+        try? await Task.sleep(for: .seconds(0.6))
+
+        // Goes through the shared tally, not just `lastResult`, so a toss
+        // made here counts towards the running heads/tails the app shows
+        // once it next comes to the foreground.
+        SharedCoinStore.recordFlip(face.rawValue)
         WidgetCenter.shared.reloadTimelines(ofKind: CoinTossWidgetKind.name)
         return .result()
     }

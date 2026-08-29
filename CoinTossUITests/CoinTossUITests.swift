@@ -16,6 +16,9 @@ final class CoinTossUITests: XCTestCase {
     private func launchApp() -> XCUIApplication {
         let app = XCUIApplication()
         app.terminate()
+        // The tally persists in the shared App Group store now; start every
+        // UI test from a wiped one so counts are predictable.
+        app.launchArguments += ["-uitest-reset-store"]
         app.launch()
 
         // watchOS can restore the app to whatever screen it was last showing,
