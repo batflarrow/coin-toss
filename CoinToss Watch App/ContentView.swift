@@ -1,5 +1,6 @@
 import SwiftUI
 import WatchKit
+import WidgetKit
 
 struct ContentView: View {
     @AppStorage("selectedCoinStyle") private var selectedStyleID = CoinStyle.regionalDefault.id
@@ -134,10 +135,16 @@ struct ContentView: View {
             guard !Task.isCancelled else { return }
 
             // Reveal on touchdown, so the face is readable as the coin settles.
-            flipper.flip()
+            let face = flipper.flip()
             WKInterfaceDevice.current().play(.success)
             if soundEnabled { SoundPlayer.shared.play(.land) }
             isFlipping = false
+
+            // The widget/complication reads this through the App Group, so a
+            // flip made in the app shows up there too without waiting for
+            // its own timeline to refresh on its own schedule.
+            SharedCoinStore.lastResult = face.rawValue
+            WidgetCenter.shared.reloadTimelines(ofKind: CoinTossWidgetKind.name)
         }
     }
 
@@ -149,6 +156,8 @@ struct ContentView: View {
         withAnimation(.easeInOut(duration: 0.25)) {
             flipper.reset()
         }
+        SharedCoinStore.lastResult = nil
+        WidgetCenter.shared.reloadTimelines(ofKind: CoinTossWidgetKind.name)
     }
 }
 
